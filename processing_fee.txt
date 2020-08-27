@@ -1,0 +1,33 @@
+
+--creating table--
+
+CREATE TABLE SAMPLE_DATA_FEE_CALCULATOR(
+External_Transaction_Id VARCHAR(10) PRIMARY KEY,
+Client_Id CHAR(2),
+Security_Id VARCHAR(10),
+Transaction_Type VARCHAR(10),
+Transaction_Date DATE,
+Market_Value NUMERIC,
+Priority_Flag CHAR(1)
+);
+
+SET datestyle = dmy;
+
+--loading the data from csv file-- 
+
+COPY SAMPLE_DATA_FEE_CALCULATOR FROM '/home/sunidhi/Downloads/SAMPLE_DATA_FEE_CALCULATOR.csv' WITH (FORMAT csv, HEADER true) ;
+
+--adding processing fee cloumn--
+
+ALTER TABLE SAMPLE_DATA_FEE_CALCULATOR ADD COLUMN processing_fee INT;
+
+-- adding normal transactions--
+UPDATE SAMPLE_DATA_FEE_CALCULATOR SET processing_fee = 500 
+Where priority_flag='Y';
+
+UPDATE SAMPLE_DATA_FEE_CALCULATOR SET processing_fee = 100 
+Where priority_flag='N' AND transaction_type IN('SELL','WITHDRAW') ;
+
+UPDATE SAMPLE_DATA_FEE_CALCULATOR SET processing_fee = 50
+Where priority_flag='N' AND transaction_type IN('BUY','DEPOSIT') ;
+
